@@ -1,0 +1,34 @@
+---
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.2.0
+  hooks:
+  - id: check-json
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+
+- repo: https://github.com/adrienverge/yamllint.git
+  rev: v1.26.3    # or higher tag
+  hooks:
+  - id: yamllint
+    args: [--format, parsable, --strict]
+
+- repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+  rev: 0.1.0    # or specific tag
+  hooks:
+  - id: yamlfmt
+    args: [--mapping, '2', --sequence, '2', --offset, '0', --width, '120']
+
+- repo: https://github.com/dnephin/pre-commit-golang
+  rev: master
+  hooks:
+  - id: go-fmt
+  - id: go-vet
+  - id: go-imports
+  - id: go-cyclo
+    args: [-over=15]
+  - id: golangci-lint
+  # - id: go-critic # not supported by 1.18
+  - id: go-unit-tests
+  # - id: go-build
+  - id: go-mod-tidy

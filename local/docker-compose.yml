@@ -1,0 +1,89 @@
+---
+# Example taken from: https://github.com/vegasbrianc/prometheus
+version: '3.7'
+
+volumes:
+  gitlab_mr_wh_grafana_data: {}
+  gitlab_mr_wh_prometheus_data: {}
+  gitlab_mr_wh_gitlab_data: {}
+  gitlab_mr_wh_gitlab_config: {}
+  gitlab_mr_wh_gitlab_logs: {}
+
+services:
+  grafana:
+    # https://hub.docker.com/r/grafana/grafana/tags?page=1&ordering=last_updated
+    image: grafana/grafana:8.1.5
+    ports:
+    - 3000:3000
+    volumes:
+    - gitlab_mr_wh_grafana_data:/var/lib/grafana
+    - ./config/grafana/provisioning:/etc/grafana/provisioning/
+    - ./config/grafana/provisioning/dashboards/files:/grafana/dashboards/monitoring
+    environment:
+    - GF_SECURITY_ADMIN_PASSWORD=test
+    - GF_USERS_ALLOW_SIGN_UP=false
+
+  prometheus:
+    # https://hub.docker.com/r/prom/prometheus/tags?page=1&ordering=last_updated
+    image: prom/prometheus:v2.30.1
+    volumes:
+    - ./config/prometheus/:/etc/prometheus/
+    - gitlab_mr_wh_prometheus_data:/prometheus
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/usr/share/prometheus/console_libraries
+    - --web.console.templates=/usr/share/prometheus/consoles
+    ports:
+    - 9000:9000
+    - 9090:9090
+
+  alertmanager:
+    # https://hub.docker.com/r/prom/alertmanager/tags?page=1&ordering=last_updated
+    image: prom/alertmanager:v0.23.0
+    ports:
+    - 9093:9093
+    volumes:
+    - ./config/alertmanager/:/etc/alertmanager/
+    command:
+    - --config.file=/etc/alertmanager/config.yml
+    - --storage.path=/alertmanager
+
+  gitlab:
+    # https://hub.docker.com/r/gitlab/gitlab-ce/tags?page=1&ordering=last_updated
+    image: gitlab/gitlab-ce:14.2.5-ce.0
+    restart: always
+    hostname: gitlab.example.com
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.example.com:8929'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    ports:
+    - 8929:8929
+    volumes:
+    - gitlab_mr_wh_gitlab_config:/etc/gitlab
+    - gitlab_mr_wh_gitlab_logs:/var/log/gitlab
+    - gitlab_mr_wh_gitlab_data:/var/opt/gitlab
+
+  # Commented out as expectation of running app locally
+  gitlab-mr-wh:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+    - 8080:8080
+    environment:
+    - GITLAB_URL=http://localhost:8929
+    - GITLAB_TOKEN="test"
+    - GITLAB_MR_WH_WEBHOOK_SECRET="test"
+  # - GITLAB_MR_WH_SLACK_WH_URL=""
+
+  gitlab-mr-wh-dockerhub:
+    image: graedavidson/gitlab-mr-wh:v0.1.0-man-push-1
+    ports:
+    - 8080:8080
+    environment:
+    - GITLAB_URL=http://localhost:8929
+    - GITLAB_TOKEN="test"
+    - GITLAB_MR_WH_WEBHOOK_SECRET="test"
+    # - GITLAB_MR_WH_SLACK_WH_URL=""

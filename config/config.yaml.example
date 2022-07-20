@@ -1,0 +1,12 @@
+---
+group_channels:
+  test:
+    slack_channel: "#test"
+  test/test:
+    slack_channel: "#test"
+
+user_statuses:
+  "": 1
+  "out sick": 8
+  "holiday": 8
+  "vacationing": 8
