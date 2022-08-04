@@ -1,0 +1,29 @@
+---
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: test
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - alertmanager:9093
+
+rule_files:
+- alerts.yml
+
+scrape_configs:
+- job_name: prometheus
+  scrape_interval: 5s
+  static_configs:
+  - targets: [localhost:9090]
+
+- job_name: gitlab-mr-wh
+  scrape_interval: 5s
+  honor_labels: true
+  static_configs:
+  # docker bridge expecting app to be running on local env
+  - targets: [172.17.0.1:8080]

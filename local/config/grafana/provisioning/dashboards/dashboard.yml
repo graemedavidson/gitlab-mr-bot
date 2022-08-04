@@ -1,0 +1,11 @@
+---
+apiVersion: 1
+
+providers:
+- name: docker-compose
+  orgId: 1
+  disableDeletion: false
+  editable: true
+  options:
+    path: /grafana/dashboards/monitoring
+    foldersFromFilesStructure: true

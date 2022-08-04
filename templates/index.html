@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Cache Admin</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Cached Users</h1>
+      </header>
+
+      {{ if .Response.Result }}
+      <div class="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        {{ .Response.Username }} has been {{ .Response.Result }}
+        {{ if .Response.Error }}
+        (encountered error: {{ .Response.Error }})
+        {{ end }}
+      </div>
+      {{ end }}
+
+      <div class="serverTime">
+        Server Time: {{ .ServerTime }})
+      </div>
+      <table class="GeneratedTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Slack User ID</th>
+            <th>Slack User Status</th>
+            <th>Expires</th>
+            <th>Custom Expire (weeks, days, hours)</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ $userList := .UserList }}
+          {{ $userStatuses := .UserStatuses }}
+
+          {{ range $users := $userList }}
+          <tr>
+            <form action="/cache" method="post" name="cachedUser">
+              <td><input type="text" readonly value="{{ $users.Username }}" name="username" /></td>
+              <td><input type="text" readonly value="{{ $users.SlackUserID }}" name="slackUserID" /></td>
+              <td>
+                <select id="slackStatus" name="slackStatus">
+                {{ range $status, $ttl := $userStatuses }}
+                  {{ if eq $status $users.SlackStatus }}
+                  <option value="{{ $status }}" selected>{{ $status }} (Expires in: {{ $ttl}}h)</option>
+                  {{else}}
+                  <option value="{{ $status }}" >{{ $status }} (Expires in: {{ $ttl}}h)</option>
+                  {{ end }}
+                {{ end }}
+                </select>
+              </td>
+              {{ if .Expired }}
+              <td>{{ if .CacheExpire }}{{ .CacheExpire }}{{ end }} <div class="cacheExpired">Expired</div></td>
+              {{ else }}
+              <td>{{ if .CacheExpire }}{{ .CacheExpire }}{{ end }}</td>
+              {{ end }}
+              <td>
+                <input type="text" value="0" class="customExpireEntry" name="customExpireWeeks" pattern="[0-5]" title="Please enter number between 0-5w" />w
+                <input type="text" value="0" class="customExpireEntry" name="customExpireDays" pattern="[0-6])" title="Please enter number between 0-6d"/>d
+                <input type="text" value="0" class="customExpireEntry" name="customExpireHours" pattern="(\d|1\d|2[0-4])" title="Please enter number between 0-24h"/>h
+              </td>
+              <td>
+                <input type="submit" value="clear" name="clear" />
+                <input type="submit" value="update" name="update" />
+                <input type="submit" value="delete" name="delete" title="This deletes the User from the cache and will require pulling in through a slack API request."/>
+              </td>
+            </form>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </main>
+  </body>
+  <footer>
+    <script>
+      if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+      }
+    </script>
+  </footer>
+</html>

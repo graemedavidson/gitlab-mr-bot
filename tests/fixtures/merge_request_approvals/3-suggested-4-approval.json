@@ -1,0 +1,50 @@
+{
+    "id": 1,
+    "iid": 1,
+    "project_id": 1,
+    "title": "test mr approvals",
+    "description": "test mr approvals",
+    "state": "opened",
+    "created_at": "2022-01-19T09:40:06.417Z",
+    "updated_at": "2022-02-03T16:25:26.141Z",
+    "merge_status": "can_be_merged",
+    "approved": true,
+    "approvals_required": 4,
+    "approvals_left": 0,
+    "require_password_to_approve": false,
+    "approved_by": [],
+    "suggested_approvers": [
+        {
+            "id": 1,
+            "name": "Test User 1",
+            "username": "test.user1",
+            "state": "active",
+            "avatar_url": "https://avatars.com/avatar1.png",
+            "web_url": "https://gitlab.com/test.user1"
+        },
+        {
+            "id": 2,
+            "name": "Test User 2",
+            "username": "test.user2",
+            "state": "active",
+            "avatar_url": "https://avatars.com/avatar2.png",
+            "web_url": "https://gitlab.com/test.user2"
+        },
+        {
+            "id": 3,
+            "name": "Test User 3",
+            "username": "test.user3",
+            "state": "active",
+            "avatar_url": "https://avatars.com/avatar3.png",
+            "web_url": "https://gitlab.com/test.user3"
+        }
+    ],
+    "approvers": [],
+    "approver_groups": [],
+    "user_has_approved": false,
+    "user_can_approve": false,
+    "approval_rules_left": [],
+    "has_approval_rules": true,
+    "merge_request_approvers_available": true,
+    "multiple_approval_rules_available": true
+}
