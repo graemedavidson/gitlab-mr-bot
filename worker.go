@@ -125,7 +125,7 @@ func (w *Worker) ProcessMR(gitClient GitlabWrapper, mr MergeRequests, slack Slac
 		return "", err
 	}
 
-	if slack.webhookURLSet() {
+	if len(slackChannelID) > 0 {
 		logger.WithFields(log.Fields{"channel": slackChannel}).Debug("send slack message.")
 		err = sendSlackMsg(slack, slackChannel, selectedApprovers, mr)
 		if err != nil {

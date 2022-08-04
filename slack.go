@@ -44,7 +44,7 @@ func getUsersInfo(sw SlackWrapper, users ...string) (*[]slack.User, []string, er
 	return userInfo, missingIDs, nil
 }
 
-// Uses a webhook URL which will include pre-baked auth
+// Post message to slack channel via chat api
 func sendSlackMsg(sw SlackWrapper, channel string, reviewers []*gitlab.BasicUser, mr MergeRequests) error {
 	promSlackMsgs.WithLabelValues(mr.Group(), channel).Inc()
 
@@ -55,18 +55,16 @@ func sendSlackMsg(sw SlackWrapper, channel string, reviewers []*gitlab.BasicUser
 	fmtUsernames := fmt.Sprintf("<@%s>", strings.Join(usernames, ">, <@"))
 
 	attachment := slack.Attachment{
-		AuthorName: "MR Reviewer Selection Bot",
-		Color:      "#1f81d1",
-		Text:       fmt.Sprintf("%s you have been selected to review <%s|%s> in <%s|%s>", fmtUsernames, mr.MergeReqURL(), mr.MergeReqTitle(), mr.ProjectWebURL(), mr.ProjectName()),
-		Footer:     "Selections based on CODEOWNERS file",
+		Color:  "#1f81d1",
+		Text:   fmt.Sprintf("%s you have been selected to review <%s|%s> in <%s|%s>", fmtUsernames, mr.MergeReqURL(), mr.MergeReqTitle(), mr.ProjectWebURL(), mr.ProjectName()),
+		Footer: "Selections based on CODEOWNERS file",
 	}
 
-	msg := slack.WebhookMessage{
-		Attachments: []slack.Attachment{attachment},
-		Channel:     channel,
-	}
-
-	err := sw.PostWebhook(&msg)
+	_, _, err := sw.PostMessage(
+		channel,
+		slack.MsgOptionAttachments(attachment),
+		slack.MsgOptionAsUser(true), // Add this if you want that the bot would post message as a user, otherwise it will send response using the default slackbot
+	)
 	if err != nil {
 		promSlackMsgsErrors.WithLabelValues("msg_failed", mr.Group(), channel).Inc()
 		return errors.New("failed to send slack message!")
