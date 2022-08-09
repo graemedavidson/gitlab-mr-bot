@@ -45,11 +45,6 @@ func main() {
 		server_port = "8080"
 	}
 
-	slack_wh_url := os.Getenv("GITLAB_MR_WH_SLACK_WH_URL")
-	if slack_wh_url == "" {
-		log.WithFields(log.Fields{"var": "GITLAB_MR_WH_SLACK_WH_URL"}).Warn("to enable slack notifications please set environment variable.")
-	}
-
 	slack_token := os.Getenv("GITLAB_MR_WH_SLACK_TOKEN")
 	if gitlab_token == "" {
 		log.WithFields(log.Fields{"var": "GITLAB_MR_WH_SLACK_TOKEN"}).Fatal("environment variable required.")
@@ -69,7 +64,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	slack := newSlackClient(slack_token, slack_wh_url)
+	slack := newSlackClient(slack_token)
 
 	scheduler, err := NewScheduler()
 	if err != nil {

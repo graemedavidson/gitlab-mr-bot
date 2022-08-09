@@ -1,6 +1,13 @@
 # Changelog
 https://keepachangelog.com/en/1.0.0/
 
+## [v0.11.0] - 04/08/2022
+### Changed
+- Slack messages sent via post message api instead of webhook
+
+### Removed
+- Author from slack message as message includes app name
+
 ## [v0.10.0] - 03/08/2022
 ### Changed
 - Repoistory migrated from private to public with open source license

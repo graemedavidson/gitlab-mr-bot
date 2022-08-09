@@ -124,8 +124,8 @@ type MockSlack struct {
 	wh_url string
 }
 
-func (s *MockSlack) PostWebhook(msg *slack.WebhookMessage) error {
-	return nil
+func (s *MockSlack) PostMessage(channelID string, options ...slack.MsgOption) (string, string, error) {
+	return "", "", nil
 }
 
 func (s *MockSlack) GetUsersInConversation(params *slack.GetUsersInConversationParameters) ([]string, string, error) {
@@ -185,10 +185,6 @@ func (s *MockSlack) GetUsersInfo(users ...string) (*[]slack.User, error) {
 		userInfo = append(userInfo, u1, u2)
 	}
 	return &userInfo, nil
-}
-
-func (s *MockSlack) webhookURLSet() bool {
-	return s.wh_url == ""
 }
 
 // Tests:

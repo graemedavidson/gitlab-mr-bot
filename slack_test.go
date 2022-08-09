@@ -20,11 +20,11 @@ type mockSlack struct {
 	wh_url string
 }
 
-func (s *mockSlack) PostWebhook(msg *slack.WebhookMessage) error {
-	if s.wh_url == "fail" {
-		return errors.New("failed to send slack message!")
+func (s *mockSlack) PostMessage(channelID string, options ...slack.MsgOption) (string, string, error) {
+	if len(channelID) > 0 {
+		return "", "", errors.New("failed to send slack message!")
 	}
-	return nil
+	return "", "", nil
 }
 
 // Tests
